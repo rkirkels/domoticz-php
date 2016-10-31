@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rutgerkirkels
- * Date: 31-10-16
- * Time: 22:36
- */
+
 
 namespace rutgerkirkels\domoticz_php;
 
