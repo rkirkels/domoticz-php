@@ -35,8 +35,14 @@ class Domoticz
 
     public function getLightsAndSwitches() {
         $this->connector->setUrlVars([
-           'command'
+           'type' => 'command',
+            'param' => 'getlightswitches'
         ]);
+
+        if (!empty($this->username) && !empty($this->password)) {
+            $this->connector->setUsername($this->username);
+            $this->connector->setPassword($this->password);
+        }
         $this->connector->execute();
     }
 
