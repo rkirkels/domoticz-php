@@ -33,10 +33,15 @@ class Connector
         if (!empty($this->username) && !empty($this->password)) {
             $this->setAuthenticationHeader();
         }
-        $response = curl_exec($this->connection);
+        $data = curl_exec($this->connection);
         $info = curl_getinfo($this->connection);
-var_dump($response);
-        return true;
+        if ($info['http_code'] === 200 && json_decode($data)) {
+            $this->response = new Response();
+            $this->response->setInfo($info);
+            $this->response->setData(json_decode($data));
+            return true;
+        }
+        return false;
     }
 
     public function setUrlVars(array $urlVars) {
@@ -63,5 +68,9 @@ var_dump($response);
 //        echo $authorizationHeader = base64_encode($this->username . ':' . $this->password);
         curl_setopt($this->connection, CURLOPT_USERPWD, $this->username . ':' . $this->password);
         return true;
+    }
+
+    public function getResponse() {
+        return $this->response;
     }
 }
