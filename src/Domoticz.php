@@ -31,6 +31,7 @@ class Domoticz
         }
 
         $this->connector = new Connector($this->hostname);
+        $this->connector->setUserAgent('Domoticz PHP v' . $this->version['major'] . '.' . $this->version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
     }
 
     public function getLightsAndSwitches() {
