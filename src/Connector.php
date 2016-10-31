@@ -28,6 +28,8 @@ class Connector
         }
 
         $this->connection = curl_init($url);
+
+        $this->setUserAgent();
         curl_setopt($this->connection, CURLOPT_RETURNTRANSFER, true);
 
         if (!empty($this->username) && !empty($this->password)) {
@@ -65,11 +67,14 @@ class Connector
     }
 
     private function setAuthenticationHeader() {
-//        echo $authorizationHeader = base64_encode($this->username . ':' . $this->password);
         curl_setopt($this->connection, CURLOPT_USERPWD, $this->username . ':' . $this->password);
         return true;
     }
 
+    public function setUserAgent($string) {
+        curl_setopt($this->connection,CURLOPT_USERAGENT,$string);
+        return true;
+    }
     public function getResponse() {
         return $this->response;
     }
