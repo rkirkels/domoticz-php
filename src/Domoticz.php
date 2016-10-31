@@ -44,6 +44,18 @@ class Domoticz
             $this->connector->setPassword($this->password);
         }
         $this->connector->execute();
+        $response = $this->connector->getResponse();
+
+        if ($response->getData()->result > 0) {
+            $actors = [];
+            foreach ($response->getData()->result as $actor) {
+                $newActor = new Actor();
+                $newActor->setIdx(intval($actor->idx));
+                $newActor->setName($actor->Name);
+                $actors[] = $newActor;
+            }
+            return $actors;
+        }
     }
 
     /**
