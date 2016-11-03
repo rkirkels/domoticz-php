@@ -2,7 +2,7 @@
 namespace rutgerkirkels\domoticz_php;
 
 
-class Actor extends Component
+class Actor extends Device
 {
 
 }

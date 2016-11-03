@@ -10,6 +10,7 @@ class Connector
     private $username = null;
     private $password = null;
     private $connection = null;
+    private $userAgent = null;
 
     public function __construct($url)
     {
@@ -28,10 +29,8 @@ class Connector
         }
 
         $this->connection = curl_init($url);
-
-        $this->setUserAgent();
         curl_setopt($this->connection, CURLOPT_RETURNTRANSFER, true);
-
+        curl_setopt($this->connection,CURLOPT_USERAGENT,$this->userAgent);
         if (!empty($this->username) && !empty($this->password)) {
             $this->setAuthenticationHeader();
         }
@@ -72,7 +71,7 @@ class Connector
     }
 
     public function setUserAgent($string) {
-        curl_setopt($this->connection,CURLOPT_USERAGENT,$string);
+        $this->userAgent = $string;
         return true;
     }
     public function getResponse() {
