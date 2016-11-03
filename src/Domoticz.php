@@ -40,12 +40,7 @@ class Domoticz
             'param' => 'getlightswitches'
         ]);
 
-        if (!empty($this->username) && !empty($this->password)) {
-            $this->connector->setUsername($this->username);
-            $this->connector->setPassword($this->password);
-        }
-        $this->connector->execute();
-        $response = $this->connector->getResponse();
+        $response = $this->send();
 
         if ($response->getData()->result > 0) {
             $actors = [];
@@ -59,12 +54,29 @@ class Domoticz
         }
     }
 
-    /**
-     * @return null
-     */
-    public function getHostname()
-    {
-        return $this->hostname;
+    public function getTemperatureDevices() {
+        $this->connector->setUrlVars([
+            'type' => 'devices',
+            'filter' => 'temp',
+            'order' => 'Name'
+        ]);
+
+        $response = $this->send();
+
+        $sensors = [];
+        foreach ($response->getData()->result as $deviceData) {
+            $sensors[] = new Sensor($deviceData);
+        }
+        return $sensors;
+    }
+
+    private function send() {
+        if (!empty($this->username) && !empty($this->password)) {
+            $this->connector->setUsername($this->username);
+            $this->connector->setPassword($this->password);
+        }
+        $this->connector->execute();
+        return $this->connector->getResponse();
     }
 
 }
