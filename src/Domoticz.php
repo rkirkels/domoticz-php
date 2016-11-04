@@ -97,4 +97,9 @@ class Domoticz
         $versionString = self::$version['major'] . '.' . self::$version['minor'] . '.' . self::$version['revision'];
         return $versionString;
     }
+
+    public function loadConfig($file) {
+        $data = \Spyc::YAMLLoad('config.yaml');
+        var_dump($data);
+    }
 }
