@@ -19,6 +19,7 @@ class Domoticz
         'number'    => '',
     ];
     private $connector = null;
+    private $Config = null;
     private static $getSingleton;
     const NEST_HARDWARE_VALUE = 52;
     public static function singleton() {
@@ -100,6 +101,11 @@ class Domoticz
 
     public function loadConfig($file) {
         $data = \Spyc::YAMLLoad('config.yaml');
-        var_dump($data);
+        $this->Config = new Config($data);
+        return true;
+    }
+
+    public function getAppliances() {
+        return $this->Config->loadAppliances();
     }
 }

@@ -15,7 +15,6 @@ class NestThermostat
 
     public function __construct($sensorIdx = null, $heatingIdx = null, $awayIdx = null, $setpointIdx = null)
     {
-        $this->connector = Connector::getInstance();
         if (!empty($sensorIdx)) {
         $this->setSensorIdx($sensorIdx);
         }
@@ -98,18 +97,19 @@ class NestThermostat
     }
 
     public function isHeatingOn() {
+        $connector = Connector::getInstance();
         if (empty($this->heatingIdx)) {
             return false;
         }
-        $this->connector->setUserAgent('Domoticz PHP v');
+        $connector->setUserAgent('Domoticz PHP v');
 
-        $this->connector->setUrlVars([
+        $connector->setUrlVars([
             'type' => 'devices',
             'rid' => $this->heatingIdx
         ]);
 
-        $this->connector->execute();
-        $response = $this->connector->getResponse();
+        $connector->execute();
+        $response = $connector->getResponse();
 
         try {
             if ($response->getData()->result[0]->HardwareTypeVal !== Domoticz::NEST_HARDWARE_VALUE) {
