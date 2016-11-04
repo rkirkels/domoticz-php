@@ -11,7 +11,14 @@ class Connector
     private $password = null;
     private $connection = null;
     private $userAgent = null;
+    private static $instance = null;
 
+    public static function getInstance($url = null) {
+        if (self::$instance === null) {
+            self::$instance = new Connector($url);
+        }
+        return self::$instance;
+    }
     public function __construct($url)
     {
         $this->url = $url . '/json.htm';

@@ -3,13 +3,14 @@
 namespace rutgerkirkels\domoticz_php;
 
 use rutgerkirkels\domoticz_php\Connector;
+use rutgerkirkels\domoticz_php\Devices\NestThermostat;
 
 class Domoticz
 {
     private $hostname = null;
-    private $username = null;
-    private $password = null;
-    private $version = [
+    private static $username = null;
+    private static $password = null;
+    private static $version = [
         'major'     => '1',
         'minor'     => '0',
         'revision'  => '0',
@@ -18,20 +19,29 @@ class Domoticz
         'number'    => '',
     ];
     private $connector = null;
-    public function __construct($hostname, $username = null, $password = null)
+    private $Config = null;
+    private static $getSingleton;
+    const NEST_HARDWARE_VALUE = 52;
+    public static function singleton() {
+        if (null === self::$getSingleton) {
+            self::$getSingleton = new Domoticz();
+        }
+    }
+
+    public function __construct($hostname = null, $username = null, $password = null)
     {
         $this->hostname = $hostname;
 
         if (!empty($username)) {
-            $this->username = $username;
+            self::$username = $username;
         }
 
         if (!empty($password)) {
-            $this->password = $password;
+            self::$password = $password;
         }
 
-        $this->connector = new Connector($this->hostname);
-        $this->connector->setUserAgent('Domoticz PHP v' . $this->version['major'] . '.' . $this->version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
+        $this->connector = Connector::getInstance($this->hostname); //new Connector($this->hostname);
+        $this->connector->setUserAgent('Domoticz PHP v' . self::$version['major'] . '.' . self::$version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
     }
 
     public function getLightsAndSwitches() {
@@ -71,12 +81,31 @@ class Domoticz
     }
 
     private function send() {
-        if (!empty($this->username) && !empty($this->password)) {
-            $this->connector->setUsername($this->username);
-            $this->connector->setPassword($this->password);
+        if (!empty(self::$username) && !empty(self::$password)) {
+            $this->connector->setUsername(self::$username);
+            $this->connector->setPassword(self::$password);
         }
         $this->connector->execute();
         return $this->connector->getResponse();
     }
 
+    public function getNestThermostat($sensorIdx = null, $heatingIdx = null, $awayIdx = null, $setpointIdx = null) {
+        $thermostat = new NestThermostat($sensorIdx, $heatingIdx, $awayIdx, $setpointIdx);
+        return $thermostat;
+    }
+
+    public static function getVersion() {
+        $versionString = self::$version['major'] . '.' . self::$version['minor'] . '.' . self::$version['revision'];
+        return $versionString;
+    }
+
+    public function loadConfig($file) {
+        $data = \Spyc::YAMLLoad('config.yaml');
+        $this->Config = new Config($data);
+        return true;
+    }
+
+    public function getAppliances() {
+        return $this->Config->loadAppliances();
+    }
 }
