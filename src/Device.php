@@ -3,8 +3,9 @@
 
 namespace rutgerkirkels\domoticz_php;
 
+use rutgerkirkels\domoticz_php\Connector;
 
-class Device
+class Device extends Domoticz
 {
     protected $idx = null;
     protected $name = null;
@@ -12,6 +13,14 @@ class Device
     protected $hardwareType = null;
 
     protected $deviceData = null;
+
+    public function __construct($idx = null)
+    {
+        if (!empty($idx)) {
+            $this->idx = $idx;
+        }
+        $this->connector = Connector::getInstance();
+    }
 
     protected function init($deviceData) {
         $this->deviceData = $deviceData;
@@ -24,17 +33,7 @@ class Device
             $this->name = $deviceData->Name;
         }
     }
-    /**
-     * @return null
-     */
-    public function getLastUpdate()
-    {
-        if (property_exists($this->deviceData, 'LastUpdate')) {
-            $timestamp = new \DateTime();
-            $timestamp->setTimestamp(strtotime($this->deviceData->LastUpdate));
-            return $timestamp;
-        }
-    }
+
     /**
      * @return null
      */
@@ -83,5 +82,37 @@ class Device
         $this->name = $name;
     }
 
+    protected function errorHandler($message, $level = E_USER_NOTICE) {
+        $trace = @next(debug_backtrace());
+        trigger_error($message . ' (Called in ' . $trace['file'] . ' on line ' . $trace['line'] . ')', $level);
+    }
 
+    public function getDeviceData() {
+        if (!empty($this->idx)) {
+            $this->connector->setUrlVars([
+                'type' => 'devices',
+                'rid' => $this->idx
+            ]);
+
+            $this->connector->execute();
+            return $this->connector->getResponse()->getData()->result[0];
+        }
+        return false;
+    }
+
+    public function getStatus() {
+        if ($deviceData = $this->getDeviceData()) {
+            return $deviceData->Status;
+        }
+        return false;
+    }
+
+    public function getLastUpdate() {
+        if ($deviceData = $this->getDeviceData()) {
+            $timestamp = new \DateTime();
+            $timestamp->setTimestamp(strtotime($deviceData->LastUpdate));
+            return $timestamp;
+        }
+        return false;
+    }
 }

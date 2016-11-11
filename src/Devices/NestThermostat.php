@@ -3,9 +3,10 @@
 namespace rutgerkirkels\domoticz_php\Devices;
 
 use rutgerkirkels\domoticz_php\Connector;
+use rutgerkirkels\domoticz_php\Device;
 use rutgerkirkels\domoticz_php\Domoticz;
 
-class NestThermostat
+class NestThermostat extends Device
 {
 
     private $sensorIdx = null;
@@ -15,6 +16,7 @@ class NestThermostat
 
     public function __construct($sensorIdx = null, $heatingIdx = null, $awayIdx = null, $setpointIdx = null)
     {
+
         if (!empty($sensorIdx)) {
         $this->setSensorIdx($sensorIdx);
         }
@@ -30,6 +32,7 @@ class NestThermostat
         if (!empty($setpointIdx)) {
             $this->setSetpointIdx($setpointIdx);
         }
+
     }
 
     /**
@@ -101,7 +104,6 @@ class NestThermostat
         if (empty($this->heatingIdx)) {
             return false;
         }
-        $connector->setUserAgent('Domoticz PHP v');
 
         $connector->setUrlVars([
             'type' => 'devices',
@@ -124,6 +126,34 @@ class NestThermostat
         }
 
         return false;
+    }
 
+    public function isAway() {
+        if (empty($this->awayIdx)) {
+            return false;
+        }
+
+        $this->connector->setUrlVars([
+            'type' => 'devices',
+            'rid' => $this->awayIdx
+        ]);
+
+        $this->connector->execute();
+
+        $response = $this->connector->getResponse();
+
+        try {
+            if ($response->getData()->result[0]->HardwareTypeVal !== Domoticz::NEST_HARDWARE_VALUE) {
+                throw new \ErrorException('IDX ' . $this->awayIdx . ' is not a Nest Thermostat');
+            }
+
+            if ($response->getData()->result[0]->Status === 'On') {
+                return true;
+            }
+
+        } catch (\Exception $e) {
+            trigger_error($e->getMessage(), E_USER_WARNING) ;
+        }
+        return false;
     }
 }

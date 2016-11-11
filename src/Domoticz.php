@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Base class
+ *
+ * @package rutgerkirkels\domoticz-php
+ * @author Rutger Kirkels <rutger@kirkels.nl>
+ * @since 1.0.0
+ */
 namespace rutgerkirkels\domoticz_php;
 
 use rutgerkirkels\domoticz_php\Connector;
@@ -18,10 +24,11 @@ class Domoticz
         'stability' => '',
         'number'    => '',
     ];
-    private $connector = null;
+    protected $connector = 'blaat';
     private $Config = null;
     private static $getSingleton;
     const NEST_HARDWARE_VALUE = 52;
+
     public static function singleton() {
         if (null === self::$getSingleton) {
             self::$getSingleton = new Domoticz();
@@ -40,7 +47,7 @@ class Domoticz
             self::$password = $password;
         }
 
-        $this->connector = Connector::getInstance($this->hostname); //new Connector($this->hostname);
+        $this->connector = Connector::getInstance($this->hostname, self::$username, self::$password);
         $this->connector->setUserAgent('Domoticz PHP v' . self::$version['major'] . '.' . self::$version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
     }
 
@@ -107,5 +114,11 @@ class Domoticz
 
     public function getAppliances() {
         return $this->Config->loadAppliances();
+    }
+
+    public function getSwitch($idx) {
+        $switch = new Actor($idx);
+        $switch->setIdx($idx);
+        return $switch;
     }
 }
