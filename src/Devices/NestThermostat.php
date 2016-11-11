@@ -32,7 +32,7 @@ class NestThermostat extends Device
         if (!empty($setpointIdx)) {
             $this->setSetpointIdx($setpointIdx);
         }
-        $this->connector = Connector::getInstance();
+
     }
 
     /**
