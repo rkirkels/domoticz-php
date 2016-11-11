@@ -13,15 +13,17 @@ class Connector
     private $userAgent = null;
     private static $instance = null;
 
-    public static function getInstance($url = null) {
+    public static function getInstance($url = null, $username = null, $password = null) {
         if (self::$instance === null) {
-            self::$instance = new Connector($url);
+            self::$instance = new Connector($url, $username, $password);
         }
         return self::$instance;
     }
-    public function __construct($url)
+    public function __construct($url, $username, $password)
     {
         $this->url = $url . '/json.htm';
+        $this->username = $username;
+        $this->password = $password;
     }
 
     public function execute() {

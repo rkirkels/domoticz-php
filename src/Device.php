@@ -3,8 +3,9 @@
 
 namespace rutgerkirkels\domoticz_php;
 
+use rutgerkirkels\domoticz_php\Connector;
 
-class Device
+class Device extends Domoticz
 {
     protected $idx = null;
     protected $name = null;
