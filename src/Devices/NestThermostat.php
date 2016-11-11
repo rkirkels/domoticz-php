@@ -101,7 +101,6 @@ class NestThermostat
         if (empty($this->heatingIdx)) {
             return false;
         }
-        $connector->setUserAgent('Domoticz PHP v');
 
         $connector->setUrlVars([
             'type' => 'devices',
@@ -124,6 +123,34 @@ class NestThermostat
         }
 
         return false;
+    }
 
+    public function isAway() {
+        $connector = Connector::getInstance();
+        if (empty($this->awayIdx)) {
+            return false;
+        }
+
+        $connector->setUrlVars([
+            'type' => 'devices',
+            'rid' => $this->awayIdx
+        ]);
+
+        $connector->execute();
+        $response = $connector->getResponse();
+
+        try {
+            if ($response->getData()->result[0]->HardwareTypeVal !== Domoticz::NEST_HARDWARE_VALUE) {
+                throw new \ErrorException('IDX ' . $this->awayIdx . ' is not a Nest Thermostat');
+            }
+
+            if ($response->getData()->result[0]->Status === 'On') {
+                return true;
+            }
+            
+        } catch (\Exception $e) {
+            trigger_error($e->getMessage(), E_USER_WARNING) ;
+        }
+        return false;
     }
 }
