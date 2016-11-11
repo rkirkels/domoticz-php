@@ -12,7 +12,7 @@ class Device extends Domoticz
     protected $lastUpdate = null;
     protected $hardwareType = null;
 
-    protected $deviceData = null;
+    private $deviceData = null;
 
     public function __construct($idx = null)
     {
@@ -87,7 +87,27 @@ class Device extends Domoticz
         trigger_error($message . ' (Called in ' . $trace['file'] . ' on line ' . $trace['line'] . ')', $level);
     }
 
-    public function getDeviceData() {
+    public function getDeviceData($idx = null) {
+        if (!empty($this->deviceData)) {
+            return $this->deviceData;
+        }
+
+        if (!empty($idx)) {
+            $this->connector->setUrlVars([
+                'type' => 'devices',
+                'rid' => $idx
+            ]);
+
+            $this->connector->execute();
+            return $this->connector->getResponse()->getData()->result[0];
+        }
+
+        $this->loadDeviceData();
+
+        return $this->deviceData;
+    }
+
+    private function loadDeviceData() {
         if (!empty($this->idx)) {
             $this->connector->setUrlVars([
                 'type' => 'devices',
@@ -95,9 +115,8 @@ class Device extends Domoticz
             ]);
 
             $this->connector->execute();
-            return $this->connector->getResponse()->getData()->result[0];
+            $this->deviceData = $this->connector->getResponse()->getData()->result[0];
         }
-        return false;
     }
 
     public function getStatus() {
