@@ -139,7 +139,7 @@ class NestThermostat extends Device
         ]);
 
         $this->connector->execute();
-        
+
         $response = $this->connector->getResponse();
 
         try {

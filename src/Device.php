@@ -84,5 +84,8 @@ class Device extends Domoticz
         $this->name = $name;
     }
 
-
+    protected function errorHandler($message, $level = E_USER_NOTICE) {
+        $trace = @next(debug_backtrace());
+        trigger_error($message . ' (Called in ' . $trace['file'] . ' on line ' . $trace['line'] . ')', $level);
+    }
 }

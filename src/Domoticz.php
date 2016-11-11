@@ -115,4 +115,10 @@ class Domoticz
     public function getAppliances() {
         return $this->Config->loadAppliances();
     }
+
+    public function getSwitch($idx) {
+        $switch = new Actor($idx);
+        $switch->setIdx($idx);
+        return $switch;
+    }
 }
