@@ -185,7 +185,24 @@ class NestThermostat extends Device
     }
 
     public function setTemperature($temperature) {
-        
+        if (empty($this->setpointIdx)) {
+            return false;
+        }
+
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'udevice',
+            'idx' => $this->setpointIdx,
+            'nvalue' => 0,
+            'svalue' => $temperature
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse();
+
+        return true;
     }
     /**
      * Gets the temperature the is currently set in the thermostat.
