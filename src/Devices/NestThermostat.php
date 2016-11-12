@@ -177,6 +177,14 @@ class NestThermostat extends Device
 
     public function getSetTemperature() {
         $device = new Sensor($this->setpointIdx);
+        try {
+            if ($device->HardwareTypeVal() !== Domoticz::NEST_HARDWARE_VALUE) {
+                throw new \ErrorException('IDX ' . $this->setpointIdx . ' is not a Nest Thermostat');
+            }
+        } catch (\Exception $e) {
+            trigger_error($e->getMessage(), E_USER_WARNING) ;
+            return false;
+        }
         return floatval($device->SetPoint());
     }
 }
