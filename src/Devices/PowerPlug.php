@@ -17,9 +17,21 @@ class PowerPlug extends Device
     private $usageIdx = null;
     private $deviceData = null;
 
-    public function __construct()
+    public function __construct($switchIdx = null, $powerIdx = null, $usageIdx = null)
     {
         parent::__construct();
+
+        if (!empty($switchIdx)) {
+            $this->switchIdx = $switchIdx;
+        }
+
+        if (!empty($powerIdx)) {
+            $this->powerIdx = $powerIdx;
+        }
+
+        if (!empty($usageIdx)) {
+            $this->usageIdx = $usageIdx;
+        }
     }
 
     /**
