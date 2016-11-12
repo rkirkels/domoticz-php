@@ -13,13 +13,17 @@ use rutgerkirkels\domoticz_php\Device;
 use rutgerkirkels\domoticz_php\Domoticz;
 use rutgerkirkels\domoticz_php\Sensor;
 
-class NestThermostat extends Device
+class NestThermostat extends Device implements DeviceInterface
 {
 
     private $sensorIdx = null;
     private $heatingIdx = null;
     private $awayIdx = null;
     private $setpointIdx = null;
+
+    public function init($deviceData) {
+
+    }
 
     public function __construct($sensorIdx = null, $heatingIdx = null, $awayIdx = null, $setpointIdx = null)
     {
