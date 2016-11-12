@@ -106,6 +106,10 @@ class NestThermostat extends Device
         $this->setpointIdx = $setpointIdx;
     }
 
+    /**
+     * Checks if the heating is currently on or off
+     * @return bool
+     */
     public function isHeatingOn() {
         $connector = Connector::getInstance();
         if (empty($this->heatingIdx)) {
@@ -135,6 +139,10 @@ class NestThermostat extends Device
         return false;
     }
 
+    /**
+     * Checks if the Away mode is on or off
+     * @return bool
+     */
     public function isAway() {
         if (empty($this->awayIdx)) {
             return false;
@@ -161,6 +169,7 @@ class NestThermostat extends Device
 
         } catch (\Exception $e) {
             trigger_error($e->getMessage(), E_USER_WARNING) ;
+            return false;
         }
         return false;
     }
@@ -175,6 +184,13 @@ class NestThermostat extends Device
         return $device->Temp();
     }
 
+    public function setTemperature($temperature) {
+        
+    }
+    /**
+     * Gets the temperature the is currently set in the thermostat.
+     * @return bool|float
+     */
     public function getSetTemperature() {
         $device = new Sensor($this->setpointIdx);
         try {
