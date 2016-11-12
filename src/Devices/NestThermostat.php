@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Nest Thermostat Device Class
+ *
+ * @package rutgerkirkels\domoticz_php
+ * @author Rutger Kirkels <rutger@kirkels.nl>
+ * @extends rutgerkirkels\domoticz_php\Device
+ */
 namespace rutgerkirkels\domoticz_php\Devices;
 
 use rutgerkirkels\domoticz_php\Connector;

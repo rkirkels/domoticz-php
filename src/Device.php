@@ -1,6 +1,10 @@
 <?php
-
-
+/**
+ * Device class
+ *
+ * @package rutgerkirkels\domoticz_php
+ * @author Rutger Kirkels <rutger@kirkels.nl>a
+ */
 namespace rutgerkirkels\domoticz_php;
 
 use rutgerkirkels\domoticz_php\Connector;
