@@ -29,7 +29,6 @@ class Sensor extends Device
 
     public function getUsage() {
         $deviceData = $this->getDeviceData();
-        var_dump($deviceData);die;
         if (property_exists($deviceData, 'Humidity')) {
             return $deviceData->Humidity;
         }
