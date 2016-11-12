@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Connector Class
+ * Provides all connectivity with the Domoticz API
+ *
+ * @package rutgerkirkels\domoticz_php
+ * @author Rutger Kirkels <rutger@kirkels.nl>
+ */
 namespace rutgerkirkels\domoticz_php;
 
 

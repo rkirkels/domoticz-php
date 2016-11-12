@@ -1,10 +1,17 @@
 <?php
-
+/**
+ * Nest Thermostat Device Class
+ *
+ * @package rutgerkirkels\domoticz_php
+ * @author Rutger Kirkels <rutger@kirkels.nl>
+ * @extends rutgerkirkels\domoticz_php\Device
+ */
 namespace rutgerkirkels\domoticz_php\Devices;
 
 use rutgerkirkels\domoticz_php\Connector;
 use rutgerkirkels\domoticz_php\Device;
 use rutgerkirkels\domoticz_php\Domoticz;
+use rutgerkirkels\domoticz_php\Sensor;
 
 class NestThermostat extends Device
 {
@@ -99,6 +106,10 @@ class NestThermostat extends Device
         $this->setpointIdx = $setpointIdx;
     }
 
+    /**
+     * Checks if the heating is currently on or off
+     * @return bool
+     */
     public function isHeatingOn() {
         $connector = Connector::getInstance();
         if (empty($this->heatingIdx)) {
@@ -128,19 +139,24 @@ class NestThermostat extends Device
         return false;
     }
 
+    /**
+     * Checks if the Away mode is on or off
+     * @return bool
+     */
     public function isAway() {
         if (empty($this->awayIdx)) {
             return false;
         }
 
-        $this->connector->setUrlVars([
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
             'type' => 'devices',
             'rid' => $this->awayIdx
         ]);
 
-        $this->connector->execute();
+        $connector->execute();
 
-        $response = $this->connector->getResponse();
+        $response = $connector->getResponse();
 
         try {
             if ($response->getData()->result[0]->HardwareTypeVal !== Domoticz::NEST_HARDWARE_VALUE) {
@@ -153,7 +169,55 @@ class NestThermostat extends Device
 
         } catch (\Exception $e) {
             trigger_error($e->getMessage(), E_USER_WARNING) ;
+            return false;
         }
         return false;
+    }
+
+    public function getHumidity() {
+        $device = new Sensor($this->sensorIdx);
+        return $device->Humidity();
+    }
+
+    public function getTemperature() {
+        $device = new Sensor($this->sensorIdx);
+        return $device->Temp();
+    }
+
+    public function setTemperature($temperature) {
+        if (empty($this->setpointIdx)) {
+            return false;
+        }
+
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'udevice',
+            'idx' => $this->setpointIdx,
+            'nvalue' => 0,
+            'svalue' => $temperature
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse();
+
+        return true;
+    }
+    /**
+     * Gets the temperature the is currently set in the thermostat.
+     * @return bool|float
+     */
+    public function getSetTemperature() {
+        $device = new Sensor($this->setpointIdx);
+        try {
+            if ($device->HardwareTypeVal() !== Domoticz::NEST_HARDWARE_VALUE) {
+                throw new \ErrorException('IDX ' . $this->setpointIdx . ' is not a Nest Thermostat');
+            }
+        } catch (\Exception $e) {
+            trigger_error($e->getMessage(), E_USER_WARNING) ;
+            return false;
+        }
+        return floatval($device->SetPoint());
     }
 }

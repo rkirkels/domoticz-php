@@ -5,6 +5,8 @@
  * @package rutgerkirkels\domoticz-php
  * @author Rutger Kirkels <rutger@kirkels.nl>
  * @since 1.0.0
+ * @use rutgerkirkels\domoticz_php\Connector
+ * @use rutgerkirkels\domoticz_php\Devices\NestThermostat
  */
 namespace rutgerkirkels\domoticz_php;
 
