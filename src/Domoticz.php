@@ -12,6 +12,7 @@ namespace rutgerkirkels\domoticz_php;
 
 use rutgerkirkels\domoticz_php\Connector;
 use rutgerkirkels\domoticz_php\Devices\NestThermostat;
+use rutgerkirkels\domoticz_php\Helpers\Timestamp;
 
 class Domoticz
 {
@@ -122,5 +123,35 @@ class Domoticz
         $switch = new Actor($idx);
         $switch->setIdx($idx);
         return $switch;
+    }
+
+    public function getSunrise() {
+        $connector = Connector::getInstance();
+
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'getSunRiseSet'
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse()->getData()->Sunset;
+
+        return Timestamp::toObject($response);
+    }
+
+    public function getSunset() {
+        $connector = Connector::getInstance();
+
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'getSunRiseSet'
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse()->getData()->Sunset;
+
+        return Timestamp::toObject($response);
     }
 }
