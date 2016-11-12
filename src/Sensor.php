@@ -6,9 +6,14 @@ namespace rutgerkirkels\domoticz_php;
 
 class Sensor extends Device
 {
-    public function __construct($data)
-    {
-        $this->init($data);
+
+    public function __call($name, $arguments) {
+        $deviceData = $this->getDeviceData();
+        var_dump($deviceData);
+        if (property_exists($deviceData,$name)) {
+            return $deviceData->$name;
+        }
+        return false;
     }
 
     /**
@@ -16,15 +21,18 @@ class Sensor extends Device
      */
     public function getTemperature()
     {
-        if (property_exists($this->deviceData, 'Temp')) {
-            return $this->deviceData->Temp;
-        }
-        return false;
+        return $this->Temp();
     }
 
     public function getHumidity() {
-        if (property_exists($this->deviceData, 'Humidity')) {
-            return $this->deviceData->Humidity;
+        return $this->Humidity();
+    }
+
+    public function getUsage() {
+        $deviceData = $this->getDeviceData();
+        var_dump($deviceData);die;
+        if (property_exists($deviceData, 'Humidity')) {
+            return $deviceData->Humidity;
         }
         return false;
     }

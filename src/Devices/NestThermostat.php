@@ -11,6 +11,7 @@ namespace rutgerkirkels\domoticz_php\Devices;
 use rutgerkirkels\domoticz_php\Connector;
 use rutgerkirkels\domoticz_php\Device;
 use rutgerkirkels\domoticz_php\Domoticz;
+use rutgerkirkels\domoticz_php\Sensor;
 
 class NestThermostat extends Device
 {
@@ -139,14 +140,15 @@ class NestThermostat extends Device
             return false;
         }
 
-        $this->connector->setUrlVars([
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
             'type' => 'devices',
             'rid' => $this->awayIdx
         ]);
 
-        $this->connector->execute();
+        $connector->execute();
 
-        $response = $this->connector->getResponse();
+        $response = $connector->getResponse();
 
         try {
             if ($response->getData()->result[0]->HardwareTypeVal !== Domoticz::NEST_HARDWARE_VALUE) {
@@ -161,5 +163,20 @@ class NestThermostat extends Device
             trigger_error($e->getMessage(), E_USER_WARNING) ;
         }
         return false;
+    }
+
+    public function getHumidity() {
+        $device = new Sensor($this->sensorIdx);
+        return $device->Humidity();
+    }
+
+    public function getTemperature() {
+        $device = new Sensor($this->sensorIdx);
+        return $device->Temp();
+    }
+
+    public function getSetTemperature() {
+        $device = new Sensor($this->setpointIdx);
+        return floatval($device->SetPoint());
     }
 }
