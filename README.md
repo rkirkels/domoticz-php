@@ -19,7 +19,7 @@ $domoticz = new \rutgerkirkels\domoticz_php\Domoticz('<hostname>','<username>', 
 
 /**
  * This example reads the temperature from the first temperature sensor that is found
-/*
+ */
 
 // Get all the temperature sensors in Domoticz
 $temperatureSensors = $domoticz->getTemperatureDevices();
