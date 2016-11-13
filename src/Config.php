@@ -16,10 +16,17 @@ class Config
         $appliances = [];
         foreach ($this->data['appliances'] as $appliance) {
             $deviceClass = __NAMESPACE__ . '\Devices\\' . $appliance['deviceType'];
-            $appliances[] = new $deviceClass;
+            $newAppliance = new $deviceClass;
+            if (isset($appliance['subDevices'])) {
+                $newAppliance->init($appliance);
+            }
+            $appliances[] = $newAppliance;
+
+
+
 
         }
-var_dump($appliances);
+        return $appliances;
 
     }
 }
