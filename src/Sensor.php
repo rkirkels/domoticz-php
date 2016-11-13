@@ -9,7 +9,7 @@ class Sensor extends Device
 
     public function __call($name, $arguments) {
         $deviceData = $this->getDeviceData();
-        if (property_exists($deviceData,$name)) {
+        if (is_object($deviceData) && property_exists($deviceData,$name)) {
             return $deviceData->$name;
         }
         return false;
