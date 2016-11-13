@@ -7,13 +7,7 @@ namespace rutgerkirkels\domoticz_php;
 class Sensor extends Device
 {
 
-    public function __call($name, $arguments) {
-        $deviceData = $this->getDeviceData();
-        if (is_object($deviceData) && property_exists($deviceData,$name)) {
-            return $deviceData->$name;
-        }
-        return false;
-    }
+
 
     /**
      * @return null
