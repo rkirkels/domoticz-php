@@ -33,7 +33,7 @@ class Device extends Domoticz
         }
         return false;
     }
-    
+
     protected function init($deviceData) {
         $this->deviceData = $deviceData;
 
