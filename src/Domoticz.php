@@ -12,6 +12,7 @@ namespace rutgerkirkels\domoticz_php;
 
 use rutgerkirkels\domoticz_php\Connector;
 use rutgerkirkels\domoticz_php\Devices\NestThermostat;
+use rutgerkirkels\domoticz_php\Helpers\Timestamp;
 
 class Domoticz
 {
@@ -26,7 +27,6 @@ class Domoticz
         'stability' => '',
         'number'    => '',
     ];
-    protected $connector = 'blaat';
     private $Config = null;
     private static $getSingleton;
     const NEST_HARDWARE_VALUE = 52;
@@ -49,24 +49,24 @@ class Domoticz
             self::$password = $password;
         }
 
-        $this->connector = Connector::getInstance($this->hostname, self::$username, self::$password);
-        $this->connector->setUserAgent('Domoticz PHP v' . self::$version['major'] . '.' . self::$version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
+        $connector = Connector::getInstance($this->hostname, self::$username, self::$password);
+        $connector->setUserAgent('Domoticz PHP v' . self::$version['major'] . '.' . self::$version['minor'] . ' (' . php_uname('s') . '-' . php_uname('r') . '; PHP-' . PHP_VERSION . '; ' . PHP_SAPI . ') ');
     }
 
     public function getLightsAndSwitches() {
-        $this->connector->setUrlVars([
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
            'type' => 'command',
             'param' => 'getlightswitches'
         ]);
 
-        $response = $this->send();
+        $connector->execute();
+        $response = $connector->getResponse();
 
         if ($response->getData()->result > 0) {
             $actors = [];
             foreach ($response->getData()->result as $actor) {
-                $newActor = new Actor();
-                $newActor->setIdx(intval($actor->idx));
-                $newActor->setName($actor->Name);
+                $newActor = new Actor($actor->idx);
                 $actors[] = $newActor;
             }
             return $actors;
@@ -74,17 +74,21 @@ class Domoticz
     }
 
     public function getTemperatureDevices() {
-        $this->connector->setUrlVars([
+        $connector = Connector::getInstance();
+        $connector->setUrlVars([
             'type' => 'devices',
             'filter' => 'temp',
             'order' => 'Name'
         ]);
 
-        $response = $this->send();
+        $connector->execute();
+        $response = $connector->getResponse();
 
         $sensors = [];
+
         foreach ($response->getData()->result as $deviceData) {
-            $sensors[] = new Sensor($deviceData);
+            $sensor = new Sensor($deviceData->idx);
+            $sensors[] = $sensor;
         }
         return $sensors;
     }
@@ -122,5 +126,35 @@ class Domoticz
         $switch = new Actor($idx);
         $switch->setIdx($idx);
         return $switch;
+    }
+
+    public function getSunrise() {
+        $connector = Connector::getInstance();
+
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'getSunRiseSet'
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse()->getData()->Sunset;
+
+        return Timestamp::toObject($response);
+    }
+
+    public function getSunset() {
+        $connector = Connector::getInstance();
+
+        $connector->setUrlVars([
+            'type' => 'command',
+            'param' => 'getSunRiseSet'
+        ]);
+
+        $connector->execute();
+
+        $response = $connector->getResponse()->getData()->Sunset;
+
+        return Timestamp::toObject($response);
     }
 }

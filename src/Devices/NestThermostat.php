@@ -13,13 +13,30 @@ use rutgerkirkels\domoticz_php\Device;
 use rutgerkirkels\domoticz_php\Domoticz;
 use rutgerkirkels\domoticz_php\Sensor;
 
-class NestThermostat extends Device
+class NestThermostat extends Device implements DeviceInterface
 {
 
     private $sensorIdx = null;
     private $heatingIdx = null;
     private $awayIdx = null;
     private $setpointIdx = null;
+
+    /**
+     * Sets the IDX variables from given config array. Valid array keys are sensorIdx, heatingIdx, awayIdx and setpointIdx.
+     * All array values should be integers.
+     * @param array $deviceData
+     * @return bool
+     */
+    public function init($deviceData) {
+        if (isset($deviceData['subDevices']) && count($deviceData['subDevices']) > 0) {
+            foreach($deviceData['subDevices'] as $subDevice => $idx) {
+                if (property_exists($this, $subDevice)) {
+                    $this->$subDevice = $idx;
+                }
+            }
+        }
+        return true;
+    }
 
     public function __construct($sensorIdx = null, $heatingIdx = null, $awayIdx = null, $setpointIdx = null)
     {
