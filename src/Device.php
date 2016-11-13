@@ -92,7 +92,6 @@ class Device extends Domoticz
     }
 
     public function getDeviceData($idx = null) {
-
         if (!empty($idx)) {
             $this->connector->setUrlVars([
                 'type' => 'devices',
@@ -112,6 +111,9 @@ class Device extends Domoticz
         return $this->deviceData;
     }
 
+    /**
+     * @return bool
+     */
     private function loadDeviceData() {
         $connector = Connector::getInstance();
         if (!empty($this->idx)) {
@@ -120,8 +122,11 @@ class Device extends Domoticz
                 'rid' => $this->idx
             ]);
 
-            $connector->execute();
-            $this->deviceData = $connector->getResponse()->getData()->result[0];
+            if ($connector->execute()) {
+                $this->deviceData = $connector->getResponse()->getData()->result[0];
+                return true;
+            }
+            return false;
         }
     }
 
