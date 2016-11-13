@@ -26,6 +26,14 @@ class Device extends Domoticz
 //        $this->connector = Connector::getInstance();
     }
 
+    public function __call($name, $arguments) {
+        $deviceData = $this->getDeviceData();
+        if (is_object($deviceData) && property_exists($deviceData,$name)) {
+            return $deviceData->$name;
+        }
+        return false;
+    }
+
     protected function init($deviceData) {
         $this->deviceData = $deviceData;
 
